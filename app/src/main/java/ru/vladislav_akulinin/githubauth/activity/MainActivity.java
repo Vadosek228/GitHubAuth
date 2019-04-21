@@ -9,9 +9,8 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ListView;
 import android.support.v7.widget.Toolbar;
+import android.widget.AdapterView;
 
 import java.util.List;
 
@@ -23,8 +22,8 @@ import ru.vladislav_akulinin.githubauth.api.ApiService;
 import ru.vladislav_akulinin.githubauth.utils.InternetConnection;
 import ru.vladislav_akulinin.githubauth.R;
 import ru.vladislav_akulinin.githubauth.api.RetrofitClient;
-import ru.vladislav_akulinin.githubauth.adapter.UserAdapter;
 import ru.vladislav_akulinin.githubauth.model.User;
+import ru.vladislav_akulinin.githubauth.utils.RecyclerClickListner;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -58,9 +57,6 @@ public class MainActivity extends AppCompatActivity {
 //                                            + userArrayList.get(position).getFollowingUrl(), Snackbar.LENGTH_LONG).show();
 //            }
 //        });
-
-        recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
-
 
         initRecyclerView();
     }
@@ -109,6 +105,8 @@ public class MainActivity extends AppCompatActivity {
                                 adapter = new UserAdapterRecycler(MainActivity.this, userArrayList);
                                 recyclerView.setAdapter(adapter);
 
+                                recyclerClick();
+
                             }else {
                                 Snackbar.make(parentView, R.string.string_some_thing_wrong, Snackbar.LENGTH_LONG).show();
                             }
@@ -132,5 +130,14 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this)); //устанавливаем линейный список отображения
     }
 
+    private void recyclerClick(){
+        recyclerView.addOnItemTouchListener(new RecyclerClickListner(MainActivity.this) {
+            @Override
+            public void onItemClick(RecyclerView recyclerView, View itemView, int position) {
+                Snackbar.make(parentView, userArrayList.get(position).getFollowersUrl() + " | "
+                                            + userArrayList.get(position).getFollowingUrl(), Snackbar.LENGTH_LONG).show();
+            }
+        });
+    }
 }
 

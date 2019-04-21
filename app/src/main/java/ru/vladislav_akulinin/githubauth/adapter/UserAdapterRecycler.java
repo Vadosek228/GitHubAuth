@@ -24,21 +24,18 @@ import ru.vladislav_akulinin.githubauth.model.User;
 public class UserAdapterRecycler extends RecyclerView.Adapter<UserAdapterRecycler.UserViewHolder> {
 
     private List<User> userList;
+    private Context mContext;
 
-    private Context context;
-    private LayoutInflater inflater;
-
-    public UserAdapterRecycler(Context context, List<User> objects){
-        this.context = context;
-        this.inflater = LayoutInflater.from(context);
-        userList = objects;
+    public UserAdapterRecycler(Context mContext, List<User> objects){
+        this.userList = objects;
+        this.mContext = mContext;
     }
 
     @NonNull
     @Override
-    public UserViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
+    public UserViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int position) {
 
-        View view = LayoutInflater.from(viewGroup.getContext())
+        final View view = LayoutInflater.from(viewGroup.getContext())
                 .inflate(R.layout.list_item, viewGroup, false);
 
         return new UserViewHolder(view);
@@ -56,7 +53,7 @@ public class UserAdapterRecycler extends RecyclerView.Adapter<UserAdapterRecycle
 
     //предоставляем прямую ссылку на каждый View-компонент
     //используется для кеширования View-компонентов и последующего быстрого доступа к ними
-    class UserViewHolder extends RecyclerView.ViewHolder{
+    class UserViewHolder extends RecyclerView.ViewHolder {
 
         private ImageView imageView;
         private TextView textViewLogin;
