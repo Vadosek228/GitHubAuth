@@ -18,6 +18,10 @@ public class User {
     @Expose
     private String avatarUrl;
 
+    @SerializedName("html_url")
+    @Expose
+    private String html_url;
+
     @SerializedName("followers_url")
     @Expose
     private String followersUrl;
@@ -66,5 +70,13 @@ public class User {
 
     public void setAvatarUrl(String avatarUrl) {
         this.avatarUrl = avatarUrl;
+    }
+
+    public String getHtml_url() {
+        return html_url;
+    }
+
+    public void setHtml_url(String html_url) {
+        this.html_url = html_url;
     }
 }

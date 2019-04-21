@@ -1,4 +1,4 @@
-package ru.vladislav_akulinin.githubauth.utils;
+package ru.vladislav_akulinin.githubauth.adapter;
 
 import android.content.Context;
 import android.support.annotation.NonNull;

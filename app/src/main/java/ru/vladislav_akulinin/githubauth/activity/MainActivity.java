@@ -8,9 +8,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.support.v7.widget.Toolbar;
-import android.widget.AdapterView;
 
 import java.util.List;
 
@@ -23,7 +24,7 @@ import ru.vladislav_akulinin.githubauth.utils.InternetConnection;
 import ru.vladislav_akulinin.githubauth.R;
 import ru.vladislav_akulinin.githubauth.api.RetrofitClient;
 import ru.vladislav_akulinin.githubauth.model.User;
-import ru.vladislav_akulinin.githubauth.utils.RecyclerClickListner;
+import ru.vladislav_akulinin.githubauth.adapter.RecyclerClickListner;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -32,11 +33,14 @@ public class MainActivity extends AppCompatActivity {
 //    private ListView listView;
     private List<User> userArrayList;
     FloatingActionButton fab;
+    private String login;
 
     private View parentView;
 
     private RecyclerView recyclerView;
     private UserAdapterRecycler adapter;
+
+    private boolean picasso;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -102,7 +106,7 @@ public class MainActivity extends AppCompatActivity {
                                 userArrayList = response.body();
 
                                 //создаем адаптер
-                                adapter = new UserAdapterRecycler(MainActivity.this, userArrayList);
+                                adapter = new UserAdapterRecycler(MainActivity.this, userArrayList,picasso);
                                 recyclerView.setAdapter(adapter);
 
                                 recyclerClick();
@@ -134,10 +138,77 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.addOnItemTouchListener(new RecyclerClickListner(MainActivity.this) {
             @Override
             public void onItemClick(RecyclerView recyclerView, View itemView, int position) {
-                Snackbar.make(parentView, userArrayList.get(position).getFollowersUrl() + " | "
-                                            + userArrayList.get(position).getFollowingUrl(), Snackbar.LENGTH_LONG).show();
+//                Snackbar.make(parentView,
+//                                              userArrayList.get(position).getFollowersUrl() + " | "
+//                                            + userArrayList.get(position).getFollowingUrl()  + " | " +
+//                                             userArrayList.get(position).getHtml_url() , Snackbar.LENGTH_LONG).show();
+
+                login = userArrayList.get(position).getLogin();
+                calling_2(login);
             }
         });
+    }
+
+    private void calling_2(String login) {
+        ApiService api = RetrofitClient.getApiService();
+        //calling json (запрос)
+        Call<List<User>> call_2 = api.getFIO(login);
+
+        //обратный вызов будет, после получения ответа
+        ((retrofit2.Call) call_2).enqueue(new Callback<List<User>>() { //делаем запрос
+            @Override
+            public void onResponse(@NonNull retrofit2.Call<List<User>> call, @NonNull Response<List<User>> response) {
+                //если успешно
+
+                if (response.isSuccessful()) { //если успешно получили
+                    userArrayList = response.body();
+
+                    //создаем адаптер
+                    adapter = new UserAdapterRecycler(MainActivity.this, userArrayList, picasso);
+                    recyclerView.setAdapter(adapter);
+
+//                    adapter.notifyDataSetChanged();
+
+                    recyclerClick();
+
+                } else {
+                    Snackbar.make(parentView, R.string.string_some_thing_wrong, Snackbar.LENGTH_LONG).show();
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull retrofit2.Call<List<User>> call, @NonNull Throwable t) {
+                //если не успешно
+
+            }
+        });
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        // получим идентификатор выбранного пункта меню
+        int id = item.getItemId();
+
+        UserAdapterRecycler adapter= new UserAdapterRecycler(MainActivity.this, userArrayList, picasso);
+
+        // Операции для выбранного пункта меню
+        switch (id) {
+            case R.id.action_button_picasso:
+                picasso = true;
+                return true;
+            case R.id.action_button_glide:
+                picasso = false;
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 }
 

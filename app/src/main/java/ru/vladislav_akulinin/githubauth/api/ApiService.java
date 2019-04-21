@@ -17,4 +17,7 @@ public interface ApiService {
     @GET("/users/octocat/followers")
 //    Call<UserList> getMyJSON(); //метод для получения списка всех контактов
     Call<List<User>> getMyJSON();
+
+    @GET("users/{login}/followers")
+    Call<List<User>> getFIO(@Path("login") String login);
 }

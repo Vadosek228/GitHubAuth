@@ -9,13 +9,11 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.squareup.picasso.Picasso;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
-import ru.vladislav_akulinin.githubauth.Interface.OnItemClickListener;
 import ru.vladislav_akulinin.githubauth.R;
 import ru.vladislav_akulinin.githubauth.model.User;
 
@@ -26,9 +24,12 @@ public class UserAdapterRecycler extends RecyclerView.Adapter<UserAdapterRecycle
     private List<User> userList;
     private Context mContext;
 
-    public UserAdapterRecycler(Context mContext, List<User> objects){
+    public boolean picasso = true;
+
+    public UserAdapterRecycler(Context mContext, List<User> objects, boolean picasso){
         this.userList = objects;
         this.mContext = mContext;
+        this.picasso = picasso;
     }
 
     @NonNull
@@ -46,6 +47,8 @@ public class UserAdapterRecycler extends RecyclerView.Adapter<UserAdapterRecycle
         userViewHolder.bind(userList.get(position));
     }
 
+
+
     @Override
     public int getItemCount() {
         return userList.size();
@@ -58,6 +61,7 @@ public class UserAdapterRecycler extends RecyclerView.Adapter<UserAdapterRecycle
         private ImageView imageView;
         private TextView textViewLogin;
         private TextView textViewId;
+        private String html_url; //для получения ФИО, копания и email
 
         private UserViewHolder(View itemView){
             super(itemView);
@@ -69,9 +73,30 @@ public class UserAdapterRecycler extends RecyclerView.Adapter<UserAdapterRecycle
         private void bind(final User user){
             textViewId.setText(user.getId());
             textViewLogin.setText(user.getLogin());
+
+            if(picasso) {
+                picasso(user);
+            }else {
+                glide(mContext, user);
+            }
+
+            html_url = user.getHtml_url();
+        }
+
+        private void picasso(User user){
             Picasso.get().load(user.getAvatarUrl()).placeholder(R.mipmap.ic_launcher)
                     .error(R.mipmap.ic_launcher).into(imageView);
         }
+
+        private void glide(Context context, User user){
+            Glide
+                    .with(context)
+                    .load(user.getAvatarUrl())
+                    .centerCrop()
+                    .placeholder(R.mipmap.ic_launcher)
+                    .into(imageView);
+        }
+
     }
 
     //очистить если нужно
